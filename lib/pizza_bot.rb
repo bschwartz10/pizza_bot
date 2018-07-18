@@ -1,4 +1,5 @@
 class PizzaBot
+  # First round of edits
   attr_reader :width, :height, :max_dimensions, :coordinates, :directions
 
   def initialize(string)
