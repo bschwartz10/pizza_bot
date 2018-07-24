@@ -1,11 +1,11 @@
 class PizzaBot
-  attr_reader :drop_points, :current_location, :directions
+  attr_reader :drop_points, :directions
 
-  def initialize(string)
-    @drop_points = validate_drop_points(string[4..-1])
-    @grid = validate_grid({width: string[0], height: string[2]})
+  def initialize(input_string)
     @current_location = {x: 0, y: 0}
     @directions = ''
+    @drop_points = initialize_drop_points(input_string[4..-1])
+    validate_grid({width: input_string[0], height: input_string[2]})
   end
 
   def calculate_directions
@@ -14,7 +14,32 @@ class PizzaBot
 
   private
 
-  def validate_drop_points(drop_points)
+  def direct_to_drop_point(drop_point)
+    # figure out X distance and Y distance
+    delta_x = drop_point[:x] - @current_location[:x]
+    delta_y = drop_point[:y] - @current_location[:y]
+
+    # take that distance and convert to a direction / add the direction to @directions
+    @directions += convert_direction(delta_x, delta_y)
+
+    # update @current_location
+    @current_location[:x] = drop_point[:x]
+    @current_location[:y] = drop_point[:y]
+  end
+
+  def convert_direction(delta_x, delta_y)
+    # given a delta x and delta y, spit out the direction in a string
+    x_direction = delta_x < 0 ? "W" : "E"
+    y_direction = delta_y < 0 ? "S" : "N"
+    (x_direction * (delta_x.abs)) + (y_direction * (delta_y.abs)) + "D"
+  end
+
+  def sort_ideal_path(drop_points)
+    # sort route based on horizontal distance from starting point
+    drop_points.sort_by {|drop_point| drop_point[:x]}
+  end
+
+  def initialize_drop_points(drop_points)
     formatted_drop_points = drop_points.gsub(/[,()\s+]/, "")
     if only_integers?(formatted_drop_points)
       format_drop_points(formatted_drop_points)
@@ -66,31 +91,6 @@ class PizzaBot
 
   def is_integer?(input)
     input.to_i.to_s == input
-  end
-
-  def direct_to_drop_point(drop_point)
-    # figure out X distance and Y distance
-    delta_x = drop_point[:x] - @current_location[:x]
-    delta_y = drop_point[:y] - @current_location[:y]
-
-    # take that distance and convert to a direction / add the direction to @directions
-    @directions += convert_direction(delta_x, delta_y)
-
-    # update @current_location
-    @current_location[:x] = drop_point[:x]
-    @current_location[:y] = drop_point[:y]
-  end
-
-  def convert_direction(delta_x, delta_y)
-    # given a delta x and delta y, spit out the direction in a string
-    x_direction = delta_x < 0 ? "W" : "E"
-    y_direction = delta_y < 0 ? "S" : "N"
-    (x_direction * (delta_x.abs)) + (y_direction * (delta_y.abs)) + "D"
-  end
-
-  def sort_ideal_path(drop_points)
-    # sort route based on horizontal distance from starting point
-    drop_points.sort_by {|drop_point| drop_point[:x]}
   end
 
 end
