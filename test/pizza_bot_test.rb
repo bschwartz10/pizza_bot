@@ -64,7 +64,6 @@ class PizzaBotTest < Minitest::Test
     pizza_bot.calculate_directions
 
     assert_equal "NDSDENNNDEDESDESDNNNDSSDD", pizza_bot.directions
-
   end
 
   def test_six_by_six_calculate_directions_two_stops
